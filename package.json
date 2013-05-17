@@ -1,0 +1,14 @@
+{
+  "name": "socket",
+  "subdomain": "nvcaine.socket",
+  "scripts": {
+    "start": "app.js"
+  },
+  "version": "0.0.0-28",
+  "engines": {
+    "node": "0.6.x"
+  },
+  "dependencies": {
+    "socket.io": "0.9.6"
+  }
+}

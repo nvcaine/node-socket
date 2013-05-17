@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+
+<head>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+	<script src="http://chattest.eu01.aws.af.cm/socket.io/socket.io.js"></script>
+	<!--<script type="text/javascript" src="jq/jquery.js"></script>-->
+	<!--<script type="text/javascript" src="socket.io/socket.io.js"></script>-->
+
+	<style type="text/css">
+	* {
+		font-family: Helvetica;
+	}
+	</style>
+
+	<script>
+	//var socket = io.connect("http://localhost:8080");
+	var socket = io.connect('http://chattest.eu01.aws.af.cm/');
+	var currentRoom = '';
+
+	socket.on('news', function (data) {
+		$("#content").append("<br />" + data.username + ": " + data.text);
+	});
+
+	socket.on('update', function (data) {
+		$("#content").append("<br />" + data.username + ": " + data.text);
+	});
+
+	$(document).ready( function () {
+
+		$("#chatForm").submit( function () {
+			if(currentRoom != null && currentRoom != 'undefined' && currentRoom != '')
+				$("#content").append("<br />" + $("#usernameInput").val() + "[" + currentRoom + "]: " + $("#textInput").val());
+			else
+				$("#content").append("<br />" + $("#usernameInput").val() + ": " + $("#textInput").val());
+
+			socket.emit('client', {username: $("#usernameInput").val(), text: $("#textInput").val()});
+			$("#textInput").val("");
+			
+			return false;
+		});
+		
+		$("#selectedRoom").change( function () {
+			currentRoom = $(this).val();
+			socket.emit('join', {room: currentRoom, username: $("#usernameInput").val()});
+		});
+	});
+	</script>
+</head>
+
+<form id="chatForm">
+	<table>
+		<tr>
+			<td>Username:</td>
+			<td><input id="usernameInput" /></td>
+		</tr>
+		<tr>
+			<td>Text:</td>
+			<td><input id="textInput" /></td>
+		</tr>
+		<tr>
+			<td colspan="2" align="right">
+				<input id="sendText" type="submit" value="Submit" />
+			</td>
+		</tr>
+	</table>
+</form>
+
+<div id="rooms">
+	Join a room:<br />
+	<select id="selectedRoom">
+		<option value=""> - Select a room - </option>
+		<option value="room1">Room 1</option>
+		<option value="room2">Room 2</option>
+	</select>
+</div>
+
+<div id="content">
+</div>
+
+</html>
